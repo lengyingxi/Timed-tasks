@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>定时任务提醒 - 管理中心</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #667eea;
+      --secondary: #764ba2;
+      --success: #28a745;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --light: #f8f9fa;
+      --dark: #343a40;
+    }
+    body {
+      background-color: #f5f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      line-height: 1.6;
+    }
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      padding: 1.5rem 0;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+    }
+    .logo i {
+      margin-right: 10px;
+      font-size: 1.8rem;
+    }
+    .btn-logout {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      transition: all 0.3s ease;
+    }
+    .btn-logout:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      color: white;
+    }
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+    .card:hover {
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      transform: translateY(-3px);
+    }
+    .card-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+      padding: 1rem 1.25rem;
+      border-bottom: none;
+    }
+    .form-control {
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      transition: all 0.3s ease;
+      padding: 0.75rem;
+    }
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+      outline: none;
+    }
+    textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+    .btn {
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn i {
+      margin-right: 8px;
+    }
+    .btn-success {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      border: none;
+    }
+    .btn-success:hover {
+      background: linear-gradient(135deg, #218838 0%, #17a2b8 100%);
+      transform: translateY(-2px);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      border: none;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #5a6edb 0%, #6a4298 100%);
+      transform: translateY(-2px);
+    }
+    .table {
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .table th {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      font-weight: 600;
+      text-align: center;
+      padding: 1rem;
+      border-bottom: none;
+    }
+    .table td {
+      padding: 1rem;
+      vertical-align: middle;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .table tbody tr {
+      background-color: white;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .table tbody tr:last-child {
+      border-bottom: none;
+    }
+    .table tbody tr:hover {
+      background-color: #f8f9ff;
+      transform: scale(1.01);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    .task-content {
+      white-space: pre-wrap;
+      text-align: left;
+      line-height: 1.6;
+      padding: 0.5rem;
+      border-radius: 8px;
+      background-color: #f8f9ff;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+    }
+    .task-time {
+      font-weight: 500;
+      color: var(--primary);
+    }
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+    .empty-state i {
+      font-size: 3rem;
+      color: #dee2e6;
+      margin-bottom: 1rem;
+    }
+    .empty-state h4 {
+      color: #6c757d;
+      margin-bottom: 0.5rem;
+    }
+    .empty-state p {
+      color: #adb5bd;
+      font-size: 0.95rem;
+    }
+    .flatpickr-input {
+      cursor: pointer;
+    }
+    .badge {
+      padding: 0.4rem 0.6rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .badge-pending {
+      background-color: #e6f7ff;
+      color: #1890ff;
+    }
+    .footer {
+      margin-top: 3rem;
+      text-align: center;
+      color: #6c757d;
+      padding: 1.5rem 0;
+      font-size: 0.9rem;
+      border-top: 1px solid #e9ecef;
+    }
+    /* 动画效果 */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-in {
+      animation: fadeInUp 0.5s ease forwards;
+    }
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+      .btn-logout {
+        margin-top: 1rem;
+        width: 100%;
+      }
+      .table-responsive {
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .task-content {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="header">
+    <div class="container header-content">
+      <div class="logo animate-fade-in">
+        <i class="fas fa-bell"></i>
+        <span>定时任务提醒管理中心</span>
+      </div>
+      <button class="btn btn-logout animate-fade-in delay-100" onclick="location.href='/logout'">
+        <i class="fas fa-sign-out-alt"></i>退出登录
+      </button>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- 添加任务表单 -->
+    <div class="card mb-4 animate-fade-in delay-200">
+      <div class="card-header">
+        <i class="fas fa-plus-circle mr-2"></i>添加新的定时任务
+      </div>
+      <div class="card-body p-4">
+        <form action="/add" method="post" id="taskForm">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <label for="datetime" class="form-label"><i class="fas fa-clock text-primary mr-2"></i>提醒时间</label>
+              <input type="text" id="datetime" name="time" class="form-control" required 
+                     placeholder="选择日期和时间" autocomplete="off">
+              <div class="form-text text-muted mt-1">
+                <i class="fas fa-info-circle mr-1"></i>请选择未来的时间点，格式：YYYY-MM-DD HH:MM
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label"><i class="fas fa-info-circle text-primary mr-2"></i>当前时间</label>
+              <div class="form-control bg-light" id="currentTime">
+                <!-- 动态显示当前时间 -->
+              </div>
+            </div>
+            <div class="col-12">
+              <label for="content" class="form-label"><i class="fas fa-comment-dots text-primary mr-2"></i>提醒内容</label>
+              <textarea id="content" name="content" class="form-control" required 
+                        placeholder="请输入提醒内容，支持多行文本..."></textarea>
+              <div class="form-text text-muted mt-1">
+                <i class="fas fa-info-circle mr-1"></i>内容将原样发送到企业微信，请确保信息准确
+              </div>
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i>保存定时任务
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 任务列表 -->
+    <div class="card animate-fade-in delay-300">
+      <div class="card-header">
+        <i class="fas fa-list-alt mr-2"></i>已创建的定时任务
+        <span class="badge bg-white text-primary ms-2">{{ tasks|length }}</span>
+      </div>
+      <div class="card-body p-0">
+        {% if tasks %}
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th>序号</th>
+                <th>提醒时间</th>
+                <th>提醒内容</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for t in tasks %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td class="task-time">{{ t['time'] }}</td>
+                <td>
+                  <div class="task-content">{{ t['content'] }}</div>
+                </td>
+                <td>
+                  <span class="badge badge-pending">
+                    <i class="fas fa-clock mr-1"></i>待执行
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-primary test-btn" 
+                          data-job-id="{{ t['job_id'] }}"
+                          data-content="{{ t['content'] }}">
+                    <i class="fas fa-paper-plane"></i> 测试发送
+                  </button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+          <i class="fas fa-calendar-check"></i>
+          <h4>暂无定时任务</h4>
+          <p>点击上方表单添加您的第一个定时任务吧</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footer">
+      <p>&copy; 2025 定时任务提醒系统 | 企业微信通知集成 | 最后更新: 2025-09-05</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh.js"></script>
+  <script>
+    // 初始化时间选择器
+    flatpickr("#datetime", {
+      enableTime: true,
+      dateFormat: "Y-m-d H:i",
+      time_24hr: true,
+      minDate: "today",
+      locale: "zh",
+      minuteIncrement: 1,
+      theme: "light",
+      onOpen: function(selectedDates, dateStr, instance) {
+        instance.setDate(new Date(), false);
+      },
+      onChange: function(selectedDates, dateStr, instance) {
+        // 验证时间是否在当前时间之后
+        const selectedTime = new Date(dateStr);
+        const now = new Date();
+        if (selectedTime <= now) {
+          alert('提醒时间必须在当前时间之后，请重新选择');
+          instance.clear();
+        }
+      }
+    });
+
+    // 实时显示当前时间
+    function updateCurrentTime() {
+      const now = new Date();
+      const options = { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit',
+        hour12: false 
+      };
+      const formattedTime = now.toLocaleString('zh-CN', options).replace(/\//g, '-');
+      document.getElementById('currentTime').textContent = formattedTime;
+    }
+    updateCurrentTime();
+    setInterval(updateCurrentTime, 1000);
+
+    // 测试按钮点击事件
+    document.querySelectorAll('.test-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const jobId = this.getAttribute('data-job-id');
+        const content = this.getAttribute('data-content');
+        
+        if (confirm(`确定要发送测试消息吗？\n\n内容：${content}`)) {
+          this.disabled = true;
+          this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发送中...';
+          window.location.href = `/test/${jobId}`;
+        }
+      });
+    });
+
+    // 表单提交处理
+    document.getElementById('taskForm').addEventListener('submit', function(e) {
+      const content = document.getElementById('content').value;
+      if (content.trim().length < 5) {
+        alert('提醒内容不能少于5个字符，请完善信息');
+        e.preventDefault();
+        return false;
+      }
+      
+      const submitBtn = this.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 保存中...';
+    });
+
+    // 页面加载动画
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.style.opacity = '0';
+      document.body.style.transition = 'opacity 0.5s ease';
+      
+      setTimeout(() => {
+        document.body.style.opacity = '1';
+      }, 100);
+    });
+  </script>
+</body>
+</html>
+    
+

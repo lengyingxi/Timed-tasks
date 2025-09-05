@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>定时任务系统 - 登录</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .login-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .login-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+    .login-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .form-control {
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      transition: all 0.3s ease;
+    }
+    .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #5a6edb 0%, #6a4298 100%);
+      transform: translateY(-2px);
+    }
+    .alert {
+      border-radius: 8px;
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .login-footer {
+      text-align: center;
+      padding: 1rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-5 col-sm-8">
+        <div class="login-card">
+          <div class="login-header">
+            <h3 class="mb-0"><i class="fas fa-bell mr-2"></i>定时任务提醒系统</h3>
+          </div>
+          <div class="card-body p-4">
+            <form action="/" method="post" id="loginForm">
+              <div class="mb-4">
+                <label for="username" class="form-label"><i class="fas fa-user-circle mr-2 text-primary"></i>用户名</label>
+                <input type="text" id="username" name="username" class="form-control" required 
+                       placeholder="请输入用户名" autocomplete="off">
+              </div>
+              <div class="mb-4">
+                <label for="password" class="form-label"><i class="fas fa-lock mr-2 text-primary"></i>密码</label>
+                <input type="password" id="password" name="password" class="form-control" required 
+                       placeholder="请输入密码">
+              </div>
+              <button type="submit" class="btn btn-primary w-100 mb-3">
+                <i class="fas fa-sign-in-alt mr-2"></i>登录系统
+              </button>
+            </form>
+            {% if error %}
+            <div class="alert alert-danger" role="alert">
+              <i class="fas fa-exclamation-circle mr-2"></i>{{ error }}
+            </div>
+            {% endif %}
+          </div>
+          <div class="login-footer">
+            <p>&copy; 2025 定时任务提醒系统 | 企业微信通知版</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // 添加表单提交动画
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      const submitBtn = this.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>登录中...';
+    });
+
+    // 页面加载动画
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.style.opacity = '0';
+      document.body.style.transition = 'opacity 0.5s ease';
+      setTimeout(() => {
+        document.body.style.opacity = '1';
+      }, 100);
+    });
+  </script>
+</body>
+</html>
+    
