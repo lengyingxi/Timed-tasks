@@ -24,6 +24,9 @@
     .btn:hover {
       transform: scale(1.05);
     }
+    .alert-lock {
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -40,8 +43,9 @@
       </div>
       <button type="submit" class="btn btn-primary w-100">登录</button>
     </form>
+    
     {% if error %}
-    <div class="alert alert-danger mt-3" role="alert">
+    <div class="alert alert-danger mt-3 text-center alert-lock" role="alert">
       {{ error }}
     </div>
     {% endif %}

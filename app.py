@@ -5,18 +5,22 @@ import datetime
 import json
 import os
 import uuid
+import time
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = "supersecretkey"
 
 USERNAME = "admin"
 PASSWORD = "admin"
-WEBHOOK_URL = "https://qyapi.weixin.qq.com/cgi-bin/webhook/xxxxxxxxxxxxxxxxxxxxxxx"
+WEBHOOK_URL = "https://qyapi.weixin.qq.com/cgi-bin/webhook/xxxxxxxxxxxxxxxxxxxxxxxx"
 
 TASK_FILE = "tasks.json"
 tasks = []
 scheduler = BackgroundScheduler(timezone="Asia/Shanghai")
 scheduler.start()
+
+# 登录失败锁定机制
+login_attempts = {}  # {username: {"count": 0, "locked_until": timestamp}}
 
 # ------------------- 工具函数 -------------------
 def load_tasks():
@@ -50,20 +54,48 @@ def send_wechat_msg(content):
 # ------------------- 路由 -------------------
 @app.route("/", methods=["GET", "POST"])
 def login():
+    error = None
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
+
+        # 初始化用户尝试记录
+        if username not in login_attempts:
+            login_attempts[username] = {"count": 0, "locked_until": 0}
+
+        # 检查锁定状态
+        if time.time() < login_attempts[username].get("locked_until", 0):
+            wait_time = int((login_attempts[username]["locked_until"] - time.time()) // 60) + 1
+            error = f"账户已锁定，请 {wait_time} 分钟后再试"
+            return render_template("login.html", error=error)
+
         if username == USERNAME and password == PASSWORD:
             session["logged_in"] = True
+            login_attempts.pop(username, None)  # 登录成功清除记录
             return redirect(url_for("index"))
-        return render_template("login.html", error="账号或密码错误")
-    return render_template("login.html")
+        else:
+            # 输入错误，计数 +1
+            login_attempts[username]["count"] += 1
+            if login_attempts[username]["count"] >= 3:
+                # 锁定 10 分钟
+                login_attempts[username]["locked_until"] = time.time() + 600
+                login_attempts[username]["count"] = 0  # 重置计数
+                error = "连续输错 3 次，账户已锁定 10 分钟"
+            else:
+                remaining = 3 - login_attempts[username]["count"]
+                error = f"账号或密码错误，还可尝试 {remaining} 次"
+    return render_template("login.html", error=error)
 
 @app.route("/home")
 def index():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
     return render_template("index.html", tasks=tasks)
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
 
 @app.route("/add", methods=["POST"])
 def add_task():
@@ -134,5 +166,4 @@ def test_task(job_id):
 if __name__ == "__main__":
     load_tasks()
     app.run(host="0.0.0.0", port=5000, debug=True)
-
 
