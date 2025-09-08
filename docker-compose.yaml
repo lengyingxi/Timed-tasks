@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  scheduler:
+    image: wechat-scheduler
+    container_name: scheduler
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./tasks.json:/app/tasks.json  # 确保当前目录（docker-compose.yml 所在目录）有 tasks.json 文件
+    restart: unless-stopped  # 可选：容器异常退出时自动重启，无需可删除
+    

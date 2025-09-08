@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8">
+  <title>修改任务</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #ff9966, #ff5e62);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    .btn {
+      border-radius: 12px;
+      transition: transform 0.2s;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+    }
+    .input-group-text {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card p-5">
+      <h2 class="mb-4 text-center fw-bold">修改任务</h2>
+      <form action="/edit/{{ task['job_id'] }}" method="post">
+        <div class="mb-3">
+          <label class="form-label">提醒时间</label>
+          <div class="input-group">
+            <input type="text" id="datetime" name="time" class="form-control" value="{{ task['time'] }}" required>
+            <span class="input-group-text bg-primary text-white" id="datetime-trigger">⏰</span>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">提醒内容</label>
+          <textarea name="content" class="form-control" rows="3" required>{{ task['content'] }}</textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">备注（可选）</label>
+          <input type="text" name="remark" class="form-control" value="{{ task['remark'] }}">
+        </div>
+        <div class="d-flex justify-content-between">
+          <button type="submit" class="btn btn-success px-4">保存修改</button>
+          <a href="/home" class="btn btn-secondary px-4">取消</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    const fp = flatpickr("#datetime", {
+      enableTime: true,
+      dateFormat: "Y-m-d H:i",
+      time_24hr: true,
+      minuteIncrement: 5
+    });
+    document.getElementById("datetime-trigger").addEventListener("click", () => fp.open());
+  </script>
+</body>
+</html>
+
